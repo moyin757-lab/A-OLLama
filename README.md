@@ -27,6 +27,7 @@ QQ 消息 ⇄ NapCat(QQ协议端, 反向WS :6190) ⇄ AstrBot(4.25.6, WebUI :618
 | 日志 | `E:\AIollama\logs` | astrbot.log（含最新初始密码）、daily_fetch.log 等 |
 | NapCat | `E:\AIollama\napcat` | v4.18.42，账号级配置 `onebot11_3792752848.json` |
 | Git 仓库 | `H:\AOllama Git` | data 为指向 `E:\AIollama\data` 的 junction，每日快照 |
+| Git 远程 | `https://github.com/moyin757-lab/A-OLLama.git` | 本地仓库已对接，`git_snapshot.ps1 -Push` 自动推送 |
 
 ## 已安装软件清单
 
