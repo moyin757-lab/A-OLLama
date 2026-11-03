@@ -7,6 +7,7 @@ QQ 消息 ⇄ NapCat(QQ协议端, 反向WS :6190) ⇄ AstrBot(4.25.6, WebUI :618
     AstrBot ──► Ollama 本地多模型（deepseek-r1 / qwen2.5 / smegmma / rwkv7）
             ├─ 插件 simple_search  ：免 Key Bing 联网搜索（/search + web_search_simple）
             ├─ 插件 ai_friend      ：用户记忆 / 表情包收藏发送 / 主动分享
+            ├─ 插件 image_sender   ：联网搜图发送（/搜图 + send_image，模型可自主发图）
             ├─ 知识库「网络知识库」：Bing 定时抓取 → nomic-embed-text → faiss 向量库
             └─ 每日定时任务        ：AIollama_daily_fetch（每天 02:30 抓取入库）
 ```
@@ -17,7 +18,7 @@ QQ 消息 ⇄ NapCat(QQ协议端, 反向WS :6190) ⇄ AstrBot(4.25.6, WebUI :618
 |---|---|---|
 | AstrBot | `E:\AIollama\astrbot` | v4.25.6，工作目录含 `.astrbot`；WebUI `http://localhost:6185` |
 | AstrBot 数据 | `E:\AIollama\astrbot\data` | cmd_config.json（UTF-8 BOM）、plugins、知识库 |
-| 插件 | `E:\AIollama\astrbot\data\plugins` | simple_search（搜索）、ai_friend（记忆/表情/分享） |
+| 插件 | `E:\AIollama\astrbot\data\plugins` | simple_search（搜索）、ai_friend（记忆/表情/分享）、image_sender（搜图发图） |
 | Ollama 模型数据 | `E:\AIollama\models` | deepseek-r1:7b、qwen2.5:7b、Yinr/Smegmma:9b、rwkv7-g1l:7.2b、nomic-embed-text |
 | 知识库 | `E:\AIollama\astrbot\data\knowledge_base` | faiss 向量库 + sqlite 文档库（kb_id `e86ea809-…`） |
 | 定时抓取 | `E:\AIollama\bot\daily_fetch.py` | 5 主题 Bing 抓取 → 写 `data\knowledge\` → 上传知识库 |
@@ -46,6 +47,7 @@ QQ 消息 ⇄ NapCat(QQ协议端, 反向WS :6190) ⇄ AstrBot(4.25.6, WebUI :618
 - **每用户独立会话**：`unique_session=true`，每个 QQ 用户保留独立聊天窗口
 - **联网搜索**：`/search <关键词>`（别名 `/搜索`）；模型也可自主调用 `web_search_simple`
 - **表情包**：白名单 QQ 发的图片自动收藏；`/表情` 随机发一张；`/表情列表` 查看
+- **搜图发图**：`/搜图 <关键词>`（别名 `/图片`）发送 1~2 张；模型可自主调用 `send_image` 发图
 - **用户记忆**：模型自主调用 `remember_user` 记录用户信息（姓名/喜好等），每次回复自动带出记忆
 - **主动分享**：模型可自主调用 `send_emoji`（发表情）、`share_content`（分享内容）
 - **主动回复**：群聊中 15% 概率主动搭话（`active_reply`，仅白名单）
@@ -105,4 +107,5 @@ QQ 消息 ⇄ NapCat(QQ协议端, 反向WS :6190) ⇄ AstrBot(4.25.6, WebUI :618
 - 定时抓取入库：daily_fetch.py 5 主题 → 知识库 **5 文档 / 30 块** ✓；计划任务 AIollama_daily_fetch（02:30）✓
 - 知识库补丁：document_storage.py 时区修复后入库成功（faiss_repro.py 回归通过）✓
 - 新插件 ai_friend：remember_user / recall_user / send_emoji / share_content 工具注册成功 ✓
+- **新插件 image_sender**：`/搜图` 命令 + `send_image` 工具；默认模型自主调用并发图成功（image 组件+附件落盘）✓
 - 白名单 / unique_session / active_reply 配置已写入并在重启后生效 ✓
