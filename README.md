@@ -75,7 +75,7 @@ QQ 消息 ⇄ NapCat(QQ协议端, 反向WS :6190) ⇄ AstrBot(4.25.6, WebUI :618
 
 ## 关键配置（cmd_config.json，UTF-8 BOM 读写）
 
-- provider：ollama-deepseek（默认，deepseek-r1:7b）/ ollama-qwen / ollama-smegmma / ollama-rwkv / ollama_emb（embedding，768 维）
+- provider：**ollama-qwen（默认，qwen2.5:7b，支持自主联网工具调用）** / ollama-deepseek / ollama-smegmma / ollama-rwkv / ollama_emb（embedding，768 维）
 - platform：aiocqhttp-qq（`0.0.0.0:6190`，token `AIollama2026`）
 - `id_whitelist: ["3211853507"]`、`unique_session: true`
 - `active_reply: {enable: true, method: possibility_reply, possibility_reply: 0.15, whitelist: ["3211853507"]}`
@@ -85,7 +85,8 @@ QQ 消息 ⇄ NapCat(QQ协议端, 反向WS :6190) ⇄ AstrBot(4.25.6, WebUI :618
 1. **cmd_config.json 是 UTF-8 BOM**：改配置须用 utf-8-sig 读写，否则中文乱码/解析失败。
 2. **NapCat 只认账号级配置**：改 `config\onebot11_3792752848.json` 才生效（通用 onebot11.json 也要改）。
 3. **NapCat 重启须 `-q 3792752848`**：否则落到二维码登录导致连不上 6190。
-4. **deepseek-r1 不调用 llm_tool**（工具调用能力弱）：联网搜索可让用户用 `/search`，或换 qwen2.5 模型。
+4. **默认模型 qwen2.5:7b 可自主联网**（已验证工具调用）；deepseek-r1 工具调用能力弱，
+   如需切回 deepseek 改 `provider_settings.default_provider_id` 为 `ollama-deepseek`。
 5. **知识库删除**：AstrBot 运行中删除报 WinError 32（文件占用）→ 先重启 AstrBot 再删。
 6. **知识库入库失败「存储失败」**：曾因 AstrBot 4.25.6 用 naive datetime 与新版 sqlmodel 冲突，
    已补丁 `document_storage.py`（`datetime.now()` → `datetime.now(timezone.utc)`，5 处）。
@@ -100,6 +101,7 @@ QQ 消息 ⇄ NapCat(QQ协议端, 反向WS :6190) ⇄ AstrBot(4.25.6, WebUI :618
 - AstrBot 接管 QQ：aiocqhttp(OneBot v11) 适配器已连接，netstat 6190 双向 ESTABLISHED ✓
 - 多模型调度：WebUI 全链路（登录 → new_session → send）deepseek-r1 正常回复 ✓
 - 联网搜索（simple_search）：`web_search_simple` 工具注册；qwen2.5:7b 自主调用并基于结果总结 ✓
+- **默认模型切换**：`default_provider_id=ollama-qwen`，默认对话即自主联网（端到端验证通过）✓
 - 定时抓取入库：daily_fetch.py 5 主题 → 知识库 **5 文档 / 30 块** ✓；计划任务 AIollama_daily_fetch（02:30）✓
 - 知识库补丁：document_storage.py 时区修复后入库成功（faiss_repro.py 回归通过）✓
 - 新插件 ai_friend：remember_user / recall_user / send_emoji / share_content 工具注册成功 ✓
